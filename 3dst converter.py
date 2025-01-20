@@ -20,49 +20,48 @@ def convert_image_to_3dst(image_path, output_path):
 
 def convert_3dst_to_image(three_dst_path, output_path):
     try:
-        # Load the 3DST texture
+        # Open the .3dst texture
         texture = Texture3dst().open(three_dst_path)
         
-        # Convert the 3DST texture to a PIL image
-        image = texture.copy(0, 0, texture.size[0], texture.size[1])
+        # Get the size of the texture
+        width, height = texture.size
         
-        # Save the image in the selected format
+        # Copy the texture as a PIL image
+        image = texture.copy(0, 0, width, height)
+        
+        # Save the image to the specified output path
         image.save(output_path)
         
         messagebox.showinfo("Success", f"Successfully converted to: {output_path}")
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {e}")
 
-def select_image_file():
+def select_file():
     file_path = filedialog.askopenfilename(
-        title="Select Image File",
+        title="Select File",
         filetypes=(
+            ("Image and 3DST Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.3dst"),
             ("Image Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tiff"),
-            ("PNG Files", "*.png"),
-            ("JPEG Files", "*.jpg;*.jpeg"),
-            ("BMP Files", "*.bmp"),
-            ("TIFF Files", "*.tiff"),
+            ("3DST Files", "*.3dst"),
             ("All Files", "*.*"),
         )
     )
     if file_path:
-        image_path_var.set(file_path)
-        show_image(file_path)
-
-def select_3dst_file():
-    file_path = filedialog.askopenfilename(
-        title="Select 3DST File",
-        filetypes=(("3DST Files", "*.3dst"), ("All Files", "*.*"))
-    )
-    if file_path:
-        three_dst_path_var.set(file_path)
+        input_path_var.set(file_path)
         show_image(file_path)
 
 def save_output_file():
     file_path = filedialog.asksaveasfilename(
         title="Save Output File",
         defaultextension=".*",
-        filetypes=(("All Files", "*.*"),)
+        filetypes=(
+            ("PNG Files", "*.png"),
+            ("JPEG Files", "*.jpg"),
+            ("BMP Files", "*.bmp"),
+            ("TIFF Files", "*.tiff"),
+            ("3DST Files", "*.3dst"),
+            ("All Files", "*.*"),
+        )
     )
     if file_path:
         output_path_var.set(file_path)
@@ -70,8 +69,15 @@ def save_output_file():
 def show_image(file_path):
     try:
         # Open the image and resize it for display
-        image = Image.open(file_path)
-        image.thumbnail((400, 400))  # Resize for preview
+        if file_path.endswith(".3dst"):
+            texture = Texture3dst().open(file_path)
+            width, height = texture.size
+            image = texture.copy(0, 0, width, height)
+        else:
+            image = Image.open(file_path)
+        
+        # Resize for preview
+        image.thumbnail((400, 400))
         img_preview = ImageTk.PhotoImage(image)
         
         # Update the label to display the image
@@ -81,37 +87,30 @@ def show_image(file_path):
         messagebox.showerror("Error", f"Cannot load image: {e}")
 
 def convert_file():
+    input_path = input_path_var.get()
+    output_path = output_path_var.get()
+    if not input_path or not output_path:
+        messagebox.showwarning("Warning", "Please select both input and output files!")
+        return
     if mode_var.get() == "image_to_3dst":
-        image_path = image_path_var.get()
-        output_path = output_path_var.get()
-        if not image_path or not output_path:
-            messagebox.showwarning("Warning", "Please select both input and output files!")
-            return
-        convert_image_to_3dst(image_path, output_path)
+        convert_image_to_3dst(input_path, output_path)
     elif mode_var.get() == "three_dst_to_image":
-        three_dst_path = three_dst_path_var.get()
-        output_path = output_path_var.get()
-        if not three_dst_path or not output_path:
-            messagebox.showwarning("Warning", "Please select both input and output files!")
-            return
-        convert_3dst_to_image(three_dst_path, output_path)
+        convert_3dst_to_image(input_path, output_path)
 
 def toggle_mode():
     if mode_var.get() == "image_to_3dst":
         mode_var.set("three_dst_to_image")
         mode_button.config(text="Switch to Convert Image to 3DST")
         input_label.config(text="Select 3DST File:")
-        browse_button.config(command=select_3dst_file)
     else:
         mode_var.set("image_to_3dst")
         mode_button.config(text="Switch to Convert 3DST to Image")
         input_label.config(text="Select Image File:")
-        browse_button.config(command=select_image_file)
 
 # Initialize the GUI app
 app = tk.Tk()
-app.title("Image and 3DST Converter")
-app.geometry("600x500")  # Larger window size
+app.title("3DST and Image Converter")
+app.geometry("600x500")
 
 # Mode variable to track which conversion is active
 mode_var = tk.StringVar(value="image_to_3dst")
@@ -124,16 +123,16 @@ mode_button.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
 input_label = tk.Label(app, text="Select Image File:")
 input_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
 
-image_path_var = tk.StringVar()
-three_dst_path_var = tk.StringVar()
-
-entry = tk.Entry(app, textvariable=image_path_var, width=50)
-entry.grid(row=1, column=1, padx=10, pady=10)
-browse_button = tk.Button(app, text="Browse", command=select_image_file)
+input_path_var = tk.StringVar()
+input_entry = tk.Entry(app, textvariable=input_path_var, width=50)
+input_entry.grid(row=1, column=1, padx=10, pady=10)
+browse_button = tk.Button(app, text="Browse", command=select_file)
 browse_button.grid(row=1, column=2, padx=10, pady=10)
 
 # Output file selection
 output_path_var = tk.StringVar()
+output_entry = tk.Entry(app, textvariable=output_path_var, width=50)
+output_entry.grid(row=2, column=1, padx=10, pady=10)
 save_button = tk.Button(app, text="Save As", command=save_output_file)
 save_button.grid(row=2, column=2, padx=10, pady=10)
 
@@ -147,4 +146,3 @@ convert_button.grid(row=4, column=1, pady=10)
 
 # Run the app
 app.mainloop()
-
