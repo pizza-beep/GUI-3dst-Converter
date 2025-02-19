@@ -94,8 +94,8 @@ def toggle_mode():
         input_label.config(text="Select Image File:")
 
 app = tk.Tk()
-app.title("3DST and Image Converter")
-app.geometry("600x500")
+app.title("3DST Image Converter")
+app.geometry("750x650")
 
 mode_var = tk.StringVar(value="image_to_3dst")
 mode_button = tk.Button(app, text="Switch to Convert 3DST to Image", command=toggle_mode, bg="blue", fg="white")
