@@ -96,6 +96,16 @@ def change_theme(theme):
     ctk.set_appearance_mode(theme)
     save_options(theme)
 
+def open_skins_menu():
+    skins_window = ctk.CTkToplevel(app)
+    skins_window.title("Skins Menu")
+    skins_window.geometry("300x200")
+    # Add widgets to the skins menu window here
+    ctk.CTkLabel(skins_window, text="Skins Menu").pack(pady=10)
+    # Example skin options
+    ctk.CTkButton(skins_window, text="Skin 1").pack(pady=5)
+    ctk.CTkButton(skins_window, text="Skin 2").pack(pady=5)
+
 app = ctk.CTk()
 app.title("3DST Image Converter")
 app.geometry("750x650")
@@ -129,5 +139,8 @@ convert_button.grid(row=4, column=1, pady=10)
 options_menu = ctk.CTkOptionMenu(app, values=["light", "dark"], command=change_theme, width=150, height=40)
 options_menu.set(current_theme)
 options_menu.grid(row=5, column=1, pady=10)
+
+skins_button = ctk.CTkButton(app, text="Skins", command=open_skins_menu, width=100, height=40)
+skins_button.grid(row=6, column=1, pady=10)
 
 app.mainloop()
