@@ -9,6 +9,12 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    # ← Declare the environment here, at the job level :contentReference[oaicite:1]{index=1}
+    environment: pypi
+    permissions:
+      # Mandatory for OIDC trusted publishing :contentReference[oaicite:2]{index=2}
+      id-token: write
+
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -30,14 +36,11 @@ jobs:
           pip install cibuildwheel
 
       - name: Run tests
-        run: |
-          pytest
+        run: pytest
 
       - name: Build wheels
-        run: |
-          cibuildwheel --output-dir wheelhouse
+        run: cibuildwheel --output-dir wheelhouse
 
       - name: Publish to PyPI
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: pypa/gh-action-pypi-publish@release/v1
-        environment: pypi
