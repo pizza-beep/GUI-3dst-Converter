@@ -1,3 +1,2 @@
 customtkinter
 pillow
-pytest
