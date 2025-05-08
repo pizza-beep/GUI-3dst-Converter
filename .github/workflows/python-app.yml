@@ -39,8 +39,8 @@ jobs:
         run: |
           cibuildwheel --output-dir wheelhouse
 
-      - name: Publish to PyPI
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+        - name: Publish to PyPI
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: pypa/gh-action-pypi-publish@release/v1
+    with:
+    environment: pypi
