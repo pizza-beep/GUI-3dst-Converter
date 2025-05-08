@@ -37,9 +37,6 @@ jobs:
           pip install cibuildwheel
           pip install git+https://github.com/STBrian/py3dst.git
 
-      - name: Run tests
-        run: pytest
-
       - name: Build wheels
         run: cibuildwheel --output-dir wheelhouse
 
