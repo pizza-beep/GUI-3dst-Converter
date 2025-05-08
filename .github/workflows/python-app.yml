@@ -9,25 +9,26 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    # ← Declare the environment here, at the job level :contentReference[oaicite:1]{index=1}
+
     environment: pypi
     permissions:
-      # Mandatory for OIDC trusted publishing :contentReference[oaicite:2]{index=2}
       id-token: write
 
     strategy:
+      fail-fast: false 
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.8, 3.9, 3.10, 3.11]
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out code
+        uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: pip
 
       - name: Install dependencies
         run: |
@@ -40,6 +41,12 @@ jobs:
 
       - name: Build wheels
         run: cibuildwheel --output-dir wheelhouse
+
+      - name: Prepare dist directory
+        run: |
+          mkdir -p dist
+          cp wheelhouse/*.whl dist/
+          python -m build --sdist --outdir dist
 
       - name: Publish to PyPI
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
