@@ -4,6 +4,8 @@ from PIL import Image
 from py3dst import Texture3dst
 import os
 
+
+
 # Load or create options file
 def load_options():
     if os.path.exists("options.txt"):
@@ -48,7 +50,7 @@ def select_file():
         show_image(file_path)
 
 def save_output_file():
-    file_path = filedialog.asksaveasfilename(defaultextension=".*", filetypes=[
+    file_path = filedialog.asksaveasfilename(filetypes=[
         ("PNG Files", "*.png"),
         ("JPEG Files", "*.jpg"),
         ("3DST Files", "*.3dst"),
@@ -80,40 +82,20 @@ def convert_file():
     if not input_path or not output_path:
         messagebox.showwarning("Warning", "Please select both input and output files!")
         return
-    convert_file_generic(input_path, output_path, mode_var.get())
+    convert_file_generic(input_path, output_path())
 
-def toggle_mode():
-    if mode_var.get() == "image_to_3dst":
-        mode_var.set("three_dst_to_image")
-        mode_button.configure(text="Switch to Convert Image to 3DST")
-        input_label.configure(text="Select 3DST File:")
-    else:
-        mode_var.set("image_to_3dst")
-        mode_button.configure(text="Switch to Convert 3DST to Image")
-        input_label.configure(text="Select Image File:")
 
 def change_theme(theme):
     ctk.set_appearance_mode(theme)
     save_options(theme)
 
-def open_skins_menu():
-    skins_window = ctk.CTkToplevel(app)
-    skins_window.title("Skins Menu")
-    skins_window.geometry("300x200")
-    # Add widgets to the skins menu window here
-    ctk.CTkLabel(skins_window, text="Skins Menu").pack(pady=10)
-    # Example skin options
-    ctk.CTkButton(skins_window, text="Skin 1").pack(pady=5)
-    ctk.CTkButton(skins_window, text="Skin 2").pack(pady=5)
-
 app = ctk.CTk()
-app.title("3DST Image Converter")
+app.title("GUI 3dst Converter")
 app.geometry("750x650")
 app.grid_columnconfigure(1, weight=1)
 
-mode_var = ctk.StringVar(value="image_to_3dst")
-mode_button = ctk.CTkButton(app, text="Switch to Convert 3DST to Image", command=toggle_mode, width=200, height=40)
-mode_button.grid(row=0, column=1, padx=10, pady=10)
+
+app.minsize(750, 650)
 
 input_label = ctk.CTkLabel(app, text="Select Image File:")
 input_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
@@ -140,7 +122,6 @@ options_menu = ctk.CTkOptionMenu(app, values=["light", "dark"], command=change_t
 options_menu.set(current_theme)
 options_menu.grid(row=5, column=1, pady=10)
 
-skins_button = ctk.CTkButton(app, text="Skins", command=open_skins_menu, width=100, height=40)
-skins_button.grid(row=6, column=1, pady=10)
+
 
 app.mainloop()
