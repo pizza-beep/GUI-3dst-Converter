@@ -41,3 +41,5 @@ jobs:
       - name: Publish to PyPI
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
