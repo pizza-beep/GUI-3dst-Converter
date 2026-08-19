@@ -39,9 +39,6 @@ jobs:
 
       - name: Build wheels
         run: cibuildwheel --output-dir wheelhouse
-        uses: pypa/cibuildwheel@v2.23.0
-        with:
-          package-dir: ./.github/pypi 
 
       - name: Prepare dist directory
         run: |
