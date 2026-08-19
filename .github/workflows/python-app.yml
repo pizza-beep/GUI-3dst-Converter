@@ -12,6 +12,7 @@ jobs:
 
     environment: pypi
     permissions:
+      contents: read
       id-token: write
 
     strategy:
