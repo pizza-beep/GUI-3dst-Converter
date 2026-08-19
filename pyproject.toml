@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "3dst-converter"
+version = "0.1.0"
+description = "GUI converter for 3DST textures from Minecraft New 3ds Edition"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "customtkinter",
+    "pillow",
+    "py3dst",
+]
+
+[tool.setuptools]
+py-modules = []
